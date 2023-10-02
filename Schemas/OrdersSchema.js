@@ -2,16 +2,26 @@ const mongoose = require('mongoose');
 
 const OrdersSchema  = new mongoose.Schema({
 
+    u_id : {
+        type : String,
+        required : true
+    },
+    payment_mode : {
+        type : String,
+        default : "Cash"
+    },
     o_data : {
         type :  Array,
         required  : true
     },
     date : {
-        type :  new Data(Date.now()),
+        type : String,
+        default :  new Date(Date.now()),
         required  : true,
     },
     ord_number : {
-        type :  Math.floor(Math.randam() *2653673517).toString().padStart(6, 0),
+        type : String,
+        default :  Math.floor(Math.random() * 165367351).toString().padStart(6, 0),
         required  : true,
     },
     status : {

@@ -14,6 +14,8 @@
     "cores": "^0.8.5",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "mongoose": "^7.4.2"
+    "moment": "^2.29.4",
+    "mongoose": "^7.4.2",
+    "nodemailer": "^6.9.5"
   }
 }

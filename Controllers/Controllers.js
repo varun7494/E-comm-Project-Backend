@@ -2,6 +2,8 @@ const UserSchema = require('../Schemas/UserSchema')
 const ProductSchema = require('../Schemas/ProductSchema')
 const bcrypt = require('bcrypt')
 const CartSchema = require('../Schemas/CartSchema')
+const OrdersSchema = require('../Schemas/OrdersSchema')
+
 
 exports.getApi = (req,res)=>{
     console.log(req.query.number)
@@ -68,7 +70,7 @@ exports.loginUser = (req,res ) =>{
 }
 
 exports.RegisterUser =(req,res)=>{
-    const {name , email , mobile , address, password, gender} =  req.body;
+    const {name , email , mobile , address,pincode , password, gender} =  req.body;
     
     bcrypt.genSalt(10, function(err , salt) {
         if(err)
@@ -84,7 +86,7 @@ exports.RegisterUser =(req,res)=>{
                 }
                 else
                 {
-                    UserSchema.insertMany({name  : name , address : address ,  email : email ,  mobile : mobile ,  password :  hash  , gender : gender}).then((result)=>{
+                    UserSchema.insertMany({name  : name , address : address ,  email : email , pincode : pincode ,  mobile : mobile ,  password :  hash  , gender : gender}).then((result)=>{
         
                         if(result.length > 0)
                         {
@@ -123,9 +125,9 @@ exports.RegisterUser =(req,res)=>{
 }
 
 exports.addAddress =(req,res)=>{
-    const {u_id, Addresses} = req.body;
+    const {u_id, addresses} = req.body;
 
-    UserSchema.updateOne({_id : u_id }, {$set : { all_addresses : Addresses }}).then((data2)=>{
+    UserSchema.updateOne({_id : u_id }, {$set : { all_addresses : addresses }}).then((data2)=>{
 
         if(data2.modifiedCount == 1)
         {
@@ -143,6 +145,36 @@ exports.addAddress =(req,res)=>{
     })
 }
 
+exports.addOrder = (req,res) =>{
+
+    const {u_id , order_data} = req.body;
+
+    OrdersSchema.insertMany({u_id : u_id , o_data : order_data}).then((result1)=>{
+        if(result1.length > 0)
+        {
+            
+            CartSchema.deleteMany({u_id : u_id}).then((re_2)=>{
+                if(re_2.deletedCount > 0)
+                {
+                    res.status(200).send({status : 200 , message : "Ordrer Placed Successfully"})
+                }
+                else
+                {
+                    res.status(400).send({status : 400 ,message : "Order Not Placed || Try Again"})
+                }
+            }).catch((err)=>{
+                res.status(500).send({status :  500 , message : "Something Went Wrong !! Please Try Again"})
+            })
+        }
+        else
+        {
+            res.status(400).send({status : 400 ,message : "Order Not Placed || Try Again"})
+        }
+    }).catch((err)=>{
+        res.status(500).send({status :  500 , message : "Something Went Wrong !! Please Try Again"})
+    })
+}
+
 exports.getUserAddresses = (req,res)=>{
 
     const {u_id} = req.query;
@@ -150,7 +182,7 @@ exports.getUserAddresses = (req,res)=>{
     UserSchema.find({_id : u_id}).then((result1)=>{
         if(result1.length > 0)
         {
-            if(result1[0].hasOwnProperty('all_addresses') && Array.isArray(result1[0]['all_addresses'].length > 0))
+            if( Array.isArray(result1[0]['all_addresses']) && result1[0]['all_addresses'].length > 0)
             {
                 res.status(200).send({status : 200 , message : "address found",data : result1[0]['all_addresses'] })
             }
@@ -368,6 +400,32 @@ ProductSchema.insertMany({p_name : p_name,price : price, image : image, category
     res.status(500).send({status :  500 , message : "Something Went Wrong !! Please Try Again"})
 
 })
+
+
+}
+
+exports.FetchAllOrders  = (req,res)=>{
+
+    const {u_id} =  req.query
+
+    OrdersSchema.find({u_id  :u_id}).then((res1)=>{
+
+        if(res1.length > 0)
+        {
+            res.status(200).send({status : 200 , data : res1, message : "Product Added Successfully"})
+
+        }
+        else{
+            res.status(400).send({status : 400 , data : [], message : "Something Went Wrong || Try Again"})
+
+        }
+
+
+
+    }).catch((err)=>{
+        res.status(500).send({status : 500 , message : "Something Went Wrong || Try Again"})
+
+    })
 
 
 }

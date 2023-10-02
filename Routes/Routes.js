@@ -13,6 +13,7 @@ router.get('/get-cart-with-products' ,MyControllers.getCartProducts)
 router.post('/update-cart-quantity' ,MyControllers.updateCartQuantity)
 router.post('/update-addresses' ,MyControllers.addAddress)
 router.get('/get-user-addresses' ,MyControllers.getUserAddresses)
-
+router.post('/place_order' ,MyControllers.addOrder)
+router.get('/fetch_orders' , MyControllers.FetchAllOrders)
 
 module.exports = router;
